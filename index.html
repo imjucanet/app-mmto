@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b3d6e">
+<title>Reporte de Mantenimiento</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <img src="logo.png" alt="Proyectronica" class="logo">
+  <div class="topbar-title">
+    <strong>Reporte de Mantenimiento</strong>
+    <small id="numLabel">Nuevo reporte</small>
+  </div>
+  <button class="icon-btn" id="btnSettings" aria-label="Ajustes">⚙</button>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-view="form">Reporte</button>
+  <button class="tab" data-view="history">Historial <span id="histCount" class="badge">0</span></button>
+</nav>
+
+<!-- ============ FORMULARIO ============ -->
+<main id="view-form" class="view active">
+
+  <section class="card">
+    <h2>Datos del cliente</h2>
+    <div class="grid">
+      <label>NIT / CC
+        <input data-bind="client.nit" list="dlNit" inputmode="numeric" autocomplete="off">
+      </label>
+      <label>Cliente
+        <input data-bind="client.name" list="dlClient" autocomplete="off">
+      </label>
+      <label>Ciudad <input data-bind="client.city"></label>
+      <label>Teléfono <input data-bind="client.phone" type="tel"></label>
+      <label>Contacto <input data-bind="client.contact"></label>
+      <label>Correo <input data-bind="client.email" type="email"></label>
+      <label class="full">Dirección <input data-bind="client.address"></label>
+    </div>
+    <datalist id="dlNit"></datalist>
+    <datalist id="dlClient"></datalist>
+  </section>
+
+  <section class="card">
+    <h2>Tipo de intervención</h2>
+    <div class="chips" id="typeChips"></div>
+  </section>
+
+  <section class="card">
+    <h2>Técnico responsable</h2>
+    <div class="grid">
+      <label>Nombre <input data-bind="technician.name"></label>
+      <label>Teléfono <input data-bind="technician.phone" type="tel"></label>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Datos generales del equipo</h2>
+    <div class="grid">
+      <label class="full">Equipo / máquina <input data-bind="equipment.name" list="dlEquip" autocomplete="off"></label>
+      <label>Tipo <input data-bind="equipment.type"></label>
+      <label>Marca <input data-bind="equipment.brand"></label>
+      <label>Modelo <input data-bind="equipment.model"></label>
+      <label>Código <input data-bind="equipment.code"></label>
+      <label>Serie <input data-bind="equipment.serial"></label>
+      <label>Ubicación <input data-bind="equipment.location"></label>
+    </div>
+    <datalist id="dlEquip"></datalist>
+  </section>
+
+  <section class="card">
+    <h2>Diagnóstico</h2>
+    <textarea data-bind="diagnosis" rows="5" placeholder="Describa la falla o el estado encontrado…"></textarea>
+  </section>
+
+  <section class="card">
+    <h2>Trabajos efectuados</h2>
+    <div id="jobs"></div>
+    <button class="btn secondary block" id="btnAddJob">+ Agregar trabajo</button>
+  </section>
+
+  <section class="card">
+    <h2>Observaciones</h2>
+    <textarea data-bind="observations" rows="4"></textarea>
+  </section>
+
+  <section class="card">
+    <h2>Firmas</h2>
+    <div class="sig-block">
+      <div class="sig-head"><span>Quien entrega (técnico)</span><button class="link" data-clear="delivers">Borrar</button></div>
+      <canvas class="sig" id="sigDelivers"></canvas>
+      <small class="muted" id="sigDeliversName"></small>
+    </div>
+    <div class="sig-block">
+      <div class="sig-head"><span>Quien recibe</span><button class="link" data-clear="receives">Borrar</button></div>
+      <canvas class="sig" id="sigReceives"></canvas>
+      <div class="grid">
+        <label>Nombre <input data-bind="receiver.name"></label>
+        <label>Cargo <input data-bind="receiver.role"></label>
+      </div>
+    </div>
+  </section>
+
+  <div class="actionbar">
+    <button class="btn secondary" id="btnNew">Nuevo</button>
+    <button class="btn primary grow" id="btnPreview">Vista previa / PDF</button>
+  </div>
+</main>
+
+<!-- ============ HISTORIAL ============ -->
+<main id="view-history" class="view">
+  <input id="histSearch" class="search" type="search" placeholder="Buscar por cliente, número o equipo…">
+  <div id="histList"></div>
+  <p class="muted center" id="histEmpty">Aún no hay reportes guardados en este dispositivo.</p>
+</main>
+
+<!-- ============ MODAL VISTA PREVIA ============ -->
+<div class="modal" id="modalPreview" hidden>
+  <div class="modal-box">
+    <div class="modal-head">
+      <strong id="pvTitle">Vista previa</strong>
+      <button class="icon-btn" data-close>✕</button>
+    </div>
+    <div class="modal-body" id="pvBody"></div>
+    <div class="modal-foot">
+      <button class="btn secondary" id="pvOpen">Abrir</button>
+      <button class="btn secondary" id="pvShare">Compartir</button>
+      <button class="btn primary" id="pvDownload">Descargar PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL AJUSTES ============ -->
+<div class="modal" id="modalSettings" hidden>
+  <div class="modal-box">
+    <div class="modal-head"><strong>Ajustes</strong><button class="icon-btn" data-close>✕</button></div>
+    <div class="modal-body">
+      <h3>Técnico por defecto</h3>
+      <div class="grid">
+        <label>Nombre <input id="setTechName"></label>
+        <label>Teléfono <input id="setTechPhone" type="tel"></label>
+      </div>
+      <h3>Empresa (encabezado del PDF)</h3>
+      <div class="grid">
+        <label class="full">Razón social <input id="setCoName"></label>
+        <label>NIT <input id="setCoNit"></label>
+        <label>Teléfono <input id="setCoPhone"></label>
+        <label class="full">Dirección <input id="setCoAddr"></label>
+        <label class="full">Correo <input id="setCoMail"></label>
+        <label>Prefijo de numeración <input id="setPrefix"></label>
+        <label>Último consecutivo <input id="setCounter" type="number" min="0"></label>
+      </div>
+      <h3>Datos</h3>
+      <div class="row">
+        <button class="btn secondary" id="btnExport">Exportar respaldo (JSON)</button>
+        <label class="btn secondary file">Importar<input type="file" id="fileImport" accept="application/json" hidden></label>
+      </div>
+      <p class="muted">Los reportes se guardan en este teléfono. Exporta un respaldo con regularidad hasta conectar el servidor GMAO.</p>
+    </div>
+    <div class="modal-foot"><button class="btn primary" id="btnSaveSettings">Guardar</button></div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="vendor/jspdf.umd.min.js"></script>
+<script src="js/db.js"></script>
+<script src="js/model.js"></script>
+<script src="js/pdf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "Reporte de Mantenimiento",
+  "short_name": "Reporte MTTO",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f3f5f8",
+  "theme_color": "#0b3d6e",
+  "lang": "es",
+  "icons": [
+    { "src": "logo.png", "sizes": "322x161", "type": "image/png", "purpose": "any" }
+  ]
+}
